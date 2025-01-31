@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { FormErrorMessage } from "./form-error-message";
 import { getErrorById } from "./utils/flattenErrors";
+import { cn } from "@/lib/utils";
 
 interface FormElementProps {
   name: string;
@@ -58,17 +59,15 @@ export function InputField({
   type = "text",
   placeholder,
 }: InputFieldProps) {
-  const context = useFormContext();
-  const error = getErrorById(context.formState.errors, name);
-
   return (
     <FormField name={name} label={label}>
-      {(register) => (
+      {(register, error) => (
         <Input
           id={name}
           type={type}
           {...register(name)}
           placeholder={placeholder}
+          className={error ? "border-red-500" : ""}
         />
       )}
     </FormField>
@@ -78,9 +77,9 @@ export function InputField({
 export function SelectField({ name, label, options }: SelectFieldProps) {
   return (
     <FormField name={name} label={label}>
-      {(register) => (
+      {(register, error) => (
         <Select {...register(name)}>
-          <SelectTrigger>
+          <SelectTrigger className={error ? "border-red-500" : ""}>
             <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
           </SelectTrigger>
           <SelectContent>
@@ -99,9 +98,12 @@ export function SelectField({ name, label, options }: SelectFieldProps) {
 export function RadioField({ name, label, options }: RadioFieldProps) {
   return (
     <FormField name={name} label={label}>
-      {(register) => (
+      {(register, error) => (
         <>
-          <RadioGroup {...register(name)} className="flex space-x-4">
+          <RadioGroup
+            {...register(name)}
+            className={cn("flex space-x-4", error ? "border-red-500" : "")}
+          >
             {options.map((option) => (
               <div key={option.value} className="flex items-center space-x-2">
                 <RadioGroupItem
