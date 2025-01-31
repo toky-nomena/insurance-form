@@ -11,23 +11,45 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FormErrorMessage } from "./form-error-message";
+import { getErrorById } from "./utils/flattenErrors";
 
-interface FormFieldProps {
+interface FormElementProps {
   name: string;
   label: string;
 }
 
-interface InputFieldProps extends FormFieldProps {
+interface InputFieldProps extends FormElementProps {
   type?: string;
   placeholder?: string;
 }
 
-interface SelectFieldProps extends FormFieldProps {
+interface SelectFieldProps extends FormElementProps {
   options: { value: string; label: string }[];
 }
 
-interface RadioFieldProps extends FormFieldProps {
+interface RadioFieldProps extends FormElementProps {
   options: { value: string; label: string }[];
+}
+
+type Register = ReturnType<typeof useFormContext>["register"];
+
+interface FormFieldProps {
+  name: string;
+  label: string;
+  children: (context: Register, error?: string) => React.ReactNode;
+}
+
+function FormField({ children, name, label }: FormFieldProps) {
+  const context = useFormContext();
+  const error = getErrorById(context.formState.errors, name);
+
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={name}>{label}</Label>
+      {children(context.register, error)}
+      <FormErrorMessage error={error} />
+    </div>
+  );
 }
 
 export function InputField({
@@ -36,63 +58,64 @@ export function InputField({
   type = "text",
   placeholder,
 }: InputFieldProps) {
-  const { register } = useFormContext();
+  const context = useFormContext();
+  const error = getErrorById(context.formState.errors, name);
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor={name}>{label}</Label>
-      <Input
-        id={name}
-        type={type}
-        {...register(name)}
-        placeholder={placeholder}
-      />
-      <FormErrorMessage name={name} />
-    </div>
+    <FormField name={name} label={label}>
+      {(register) => (
+        <Input
+          id={name}
+          type={type}
+          {...register(name)}
+          placeholder={placeholder}
+        />
+      )}
+    </FormField>
   );
 }
 
 export function SelectField({ name, label, options }: SelectFieldProps) {
-  const { register } = useFormContext();
-
   return (
-    <div className="space-y-2">
-      <Label htmlFor={name}>{label}</Label>
-      <Select {...register(name)}>
-        <SelectTrigger>
-          <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <FormErrorMessage name={name} />
-    </div>
+    <FormField name={name} label={label}>
+      {(register) => (
+        <Select {...register(name)}>
+          <SelectTrigger>
+            <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    </FormField>
   );
 }
 
 export function RadioField({ name, label, options }: RadioFieldProps) {
-  const { register } = useFormContext();
-
   return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      <RadioGroup {...register(name)} className="flex space-x-4">
-        {options.map((option) => (
-          <div key={option.value} className="flex items-center space-x-2">
-            <RadioGroupItem
-              value={option.value}
-              id={`${name}-${option.value}`}
-            />
-            <Label htmlFor={`${name}-${option.value}`}>{option.label}</Label>
-          </div>
-        ))}
-      </RadioGroup>
-      <FormErrorMessage name={name} />
-    </div>
+    <FormField name={name} label={label}>
+      {(register) => (
+        <>
+          <RadioGroup {...register(name)} className="flex space-x-4">
+            {options.map((option) => (
+              <div key={option.value} className="flex items-center space-x-2">
+                <RadioGroupItem
+                  value={option.value}
+                  id={`${name}-${option.value}`}
+                />
+                <Label htmlFor={`${name}-${option.value}`}>
+                  {option.label}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </>
+      )}
+    </FormField>
   );
 }
