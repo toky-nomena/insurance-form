@@ -36,7 +36,10 @@ export function FormHandler<T extends FieldValues>({
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={methods.handleSubmit(onSubmit)}
+        className="space-y-6 w-full"
+      >
         <FormErrorsSummary />
         {children}
       </form>

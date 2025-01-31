@@ -14,11 +14,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <div className="min-h-screen bg-background">
+      <body className="min-h-screen bg-background">
+        <header className="w-full bg-white shadow-sm">
           <Header />
-          <div className="container mx-auto">{children}</div>]
-        </div>
+        </header>
+        <main className="w-full">
+          <div className="container mx-auto space-y-8 py-8">{children}</div>
+        </main>
       </body>
     </html>
   );

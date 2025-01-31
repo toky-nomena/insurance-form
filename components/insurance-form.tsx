@@ -32,42 +32,40 @@ export function InsuranceForm() {
   };
 
   return (
-    <div className="mx-auto p-4">
-      <FormHandler<InsuranceFormData>
-        schema={formSchema}
-        onSubmit={onSubmit}
-        errorsProps={{ title: "Contact errors" }}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>Contact Info</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <InputField
-                name="contact.firstName"
-                label="First Name"
-                placeholder="Enter first name"
-              />
-              <InputField
-                name="contact.lastName"
-                label="Last Name"
-                placeholder="Enter last name"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <InputField
-                name="contact.email"
-                label="Email"
-                placeholder="Enter email"
-              />
-            </div>
-          </CardContent>
-        </Card>
-        <div className="flex justify-start">
-          <Button type="submit">Next</Button>
-        </div>
-      </FormHandler>
-    </div>
+    <FormHandler<InsuranceFormData>
+      schema={formSchema}
+      onSubmit={onSubmit}
+      errorsProps={{ title: "Contact errors" }}
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle>Contact Info</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <InputField
+              name="contact.firstName"
+              label="First Name"
+              placeholder="Enter first name"
+            />
+            <InputField
+              name="contact.lastName"
+              label="Last Name"
+              placeholder="Enter last name"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <InputField
+              name="contact.email"
+              label="Email"
+              placeholder="Enter email"
+            />
+          </div>
+        </CardContent>
+      </Card>
+      <div className="flex justify-start">
+        <Button type="submit">Next</Button>
+      </div>
+    </FormHandler>
   );
 }
