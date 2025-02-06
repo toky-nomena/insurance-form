@@ -1,30 +1,10 @@
 "use client";
 
-import { z } from "zod";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormHandler } from "./form/form-handler";
 import { InputField } from "./form/form-fields";
 import { Button } from "./ui/button";
-
-const formSchema = z.object({
-  contact: z.object({
-    firstName: z
-      .string()
-      .nonempty("First name is required")
-      .min(2, "First name must be at least 2 characters"),
-    lastName: z
-      .string()
-      .nonempty("Last name is required")
-      .min(2, "Last name must be at least 2 characters"),
-    email: z
-      .string()
-      .nonempty("Email is required")
-      .email("Please enter a valid email address"),
-  }),
-});
-
-type InsuranceFormData = z.infer<typeof formSchema>;
+import { InsuranceFormData, insuranceFormSchema } from "@/lib/schema";
 
 export function InsuranceForm() {
   const onSubmit = (data: InsuranceFormData) => {
@@ -33,7 +13,7 @@ export function InsuranceForm() {
 
   return (
     <FormHandler<InsuranceFormData>
-      schema={formSchema}
+      schema={insuranceFormSchema}
       onSubmit={onSubmit}
       errorsProps={{ title: "Contact errors" }}
     >
