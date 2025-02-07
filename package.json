@@ -10,6 +10,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@effect/schema": "^0.75.5",
     "@hookform/resolvers": "latest",
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-radio-group": "^1.2.2",
@@ -19,6 +20,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "4.1.0",
+    "effect": "^3.12.10",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
     "next": "latest",
