@@ -3,5 +3,9 @@ interface FormErrorMessageProps {
 }
 
 export function FormErrorMessage({ error }: FormErrorMessageProps) {
-  return error ? <p className="text-sm text-red-500 mt-1">{error}</p> : null;
+  return error ? (
+    <span role="alert" className="text-sm text-red-500 mt-1">
+      {error}
+    </span>
+  ) : null;
 }

@@ -13,6 +13,7 @@ import {
 import { FormErrorMessage } from "./form-error-message";
 import { getErrorById } from "./utils/flattenErrors";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
 interface FormElementProps {
   name: string;
@@ -31,23 +32,26 @@ interface SelectFieldProps extends FormElementProps {
 interface RadioFieldProps extends FormElementProps {
   options: { value: string; label: string }[];
 }
-
-type Register = ReturnType<typeof useFormContext>["register"];
-
 interface FormFieldProps {
   name: string;
   label: string;
-  children: (context: Register, error?: string) => React.ReactNode;
+  children: (
+    context: ReturnType<typeof useFormContext>,
+    error?: string
+  ) => React.ReactNode;
 }
 
 function FormField({ children, name, label }: FormFieldProps) {
   const context = useFormContext();
-  const error = getErrorById(context.formState.errors, name);
+  const error = useMemo(
+    () => getErrorById(context.formState.errors, name),
+    [context.formState.errors, name]
+  );
 
   return (
     <div className="space-y-2">
       <Label htmlFor={name}>{label}</Label>
-      {children(context.register, error)}
+      {children(context, error)}
       <FormErrorMessage error={error} />
     </div>
   );
@@ -61,11 +65,11 @@ export function InputField({
 }: InputFieldProps) {
   return (
     <FormField name={name} label={label}>
-      {(register, error) => (
+      {(context, error) => (
         <Input
           id={name}
           type={type}
-          {...register(name)}
+          {...context.register(name)}
           placeholder={placeholder}
           className={error ? "border-red-500" : ""}
         />
@@ -77,8 +81,8 @@ export function InputField({
 export function SelectField({ name, label, options }: SelectFieldProps) {
   return (
     <FormField name={name} label={label}>
-      {(register, error) => (
-        <Select {...register(name)}>
+      {(context, error) => (
+        <Select {...context.register(name)}>
           <SelectTrigger className={error ? "border-red-500" : ""}>
             <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
           </SelectTrigger>
@@ -98,25 +102,21 @@ export function SelectField({ name, label, options }: SelectFieldProps) {
 export function RadioField({ name, label, options }: RadioFieldProps) {
   return (
     <FormField name={name} label={label}>
-      {(register, error) => (
-        <>
-          <RadioGroup
-            {...register(name)}
-            className={cn("flex space-x-4", error ? "border-red-500" : "")}
-          >
-            {options.map((option) => (
-              <div key={option.value} className="flex items-center space-x-2">
-                <RadioGroupItem
-                  value={option.value}
-                  id={`${name}-${option.value}`}
-                />
-                <Label htmlFor={`${name}-${option.value}`}>
-                  {option.label}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </>
+      {(context, error) => (
+        <RadioGroup
+          {...context.register(name)}
+          className={cn("flex space-x-4", error ? "border-red-500" : "")}
+        >
+          {options.map((option) => (
+            <div key={option.value} className="flex items-center space-x-2">
+              <RadioGroupItem
+                value={option.value}
+                id={`${name}-${option.value}`}
+              />
+              <Label htmlFor={`${name}-${option.value}`}>{option.label}</Label>
+            </div>
+          ))}
+        </RadioGroup>
       )}
     </FormField>
   );

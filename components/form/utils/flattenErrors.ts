@@ -9,22 +9,24 @@ export const flattenErrors = (
   errors: FieldErrors<FieldValues>,
   prefix = ""
 ): FormError[] => {
-  return Object.entries(errors).flatMap(([key, value]) => {
-    const id = prefix ? `${prefix}.${key}` : key;
+  return Object.entries(errors)
+    .flatMap(([key, value]) => {
+      const id = prefix ? `${prefix}.${key}` : key;
 
-    // Handle FieldError objects
-    if (typeof value?.message === "string") {
-      return { id, message: value.message };
-    }
+      // Handle FieldError objects
+      if (typeof value?.message === "string") {
+        return { id, message: value.message };
+      }
 
-    // Handle nested objects
-    if (typeof value === "object") {
-      return flattenErrors(value as FieldErrors<FieldValues>, id);
-    }
+      // Handle nested objects
+      if (typeof value === "object") {
+        return flattenErrors(value as FieldErrors<FieldValues>, id);
+      }
 
-    // Fallback for any other values
-    return { id, message: "" };
-  });
+      // Fallback for any other values
+      return undefined;
+    })
+    .filter((m) => !!m);
 };
 
 export const getErrorById = (

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { FieldErrors, FieldValues } from "react-hook-form";
 
-import { flattenErrors, FormError } from "../flattenErrors";
+import { flattenErrors, FormError, getErrorById } from "../flattenErrors";
 
 describe("flattenErrors", () => {
   it("should handle simple field errors", () => {
@@ -111,7 +111,7 @@ describe("flattenErrors", () => {
       phones: {
         0: {
           number: {
-            type: "pattern",
+            type: "required",
             message: "Invalid phone number",
           },
         },
@@ -142,5 +142,36 @@ describe("flattenErrors", () => {
     const expected: FormError[] = [{ id: "email", message: "" }];
 
     expect(flattenErrors(errors)).toEqual(expected);
+  });
+});
+
+describe("getErrorById", () => {
+  it("should return the error message for a valid id", () => {
+    const errors: FieldErrors<FieldValues> = {
+      field1: { message: "Error message for field1", type: "required" },
+      field2: { message: "Error message for field2", type: "required" },
+    };
+    expect(getErrorById(errors, "field1")).toBe("Error message for field1");
+  });
+
+  it("should return undefined for an invalid id", () => {
+    const errors: FieldErrors<FieldValues> = {
+      field1: { message: "Error message for field1", type: "required" },
+    };
+    expect(getErrorById(errors, "field2")).toBeUndefined();
+  });
+
+  it("should return undefined if there are no errors", () => {
+    const errors: FieldErrors<FieldValues> = {};
+    expect(getErrorById(errors, "field1")).toBeUndefined();
+  });
+
+  it("should handle nested errors correctly", () => {
+    const errors: FieldErrors<FieldValues> = {
+      field1: {
+        field2: { message: "Nested error message", type: "required" },
+      },
+    };
+    expect(getErrorById(errors, "field1.field2")).toBe("Nested error message");
   });
 });
